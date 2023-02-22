@@ -1,0 +1,13 @@
+name = "Humpty"
+uuid = "f0ed2d8d-fccb-4d7b-87b7-3b5a26c7bcd5"
+authors = ["Frames White <frames.white@invenialabs.co.uk> and contributors"]
+version = "1.0.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
