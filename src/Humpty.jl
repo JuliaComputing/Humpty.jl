@@ -1,5 +1,8 @@
 module Humpty
+using ChainRulesCore
+export Batch, batched_frule
 
-# Write your package code here.
+include("batch.jl")
+include("execution.jl")
 
 end

@@ -1,16 +1,16 @@
 @testset "Basics" begin
-    bb = Batch(@SVector [[0.0, 2.0], [8.0, 0.0]])
+    bb = Batch([[0.0, 2.0], [8.0, 0.0]])
 
-    @test size(bb) == 2
+    @test size(bb) == (2,)
     @test bb[1] == [0.0, 2.0]
     @test bb[2] == [8.0, 0.0]
 
-
+    @test_throws DimensionMismatch Batch{3, Float64}([1.])
 end
 
 
 @testset "Matrix representation of Jacobian" begin
-    bb = Batch(@SVector [[0.0, 2.0], [8.0, 0.0]])
+    bb = Batch([[0.0, 2.0], [8.0, 0.0]])
     bmat = convert(Matrix{Float64}, bb)
     @test bmat == [0.0 8.0; 2.0 0.0]
 
