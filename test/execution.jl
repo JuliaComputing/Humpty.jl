@@ -40,7 +40,9 @@ end
     @test primal_res == [230, 3000]
     @test deriv_batch == Batch([[100.0, 0.0], [10.0, 1000.0]])
 
-    @test convert(Matrix{Float64}, deriv_batch) == [100 10; 0 1000]  # Checked with ForwardDiff.jacobian(pmimo, [2, 3])
+    @testset "Matrix Jacobian" begin
+        @test convert(Matrix{Float64}, deriv_batch) == [100 10; 0 1000]  # Checked with ForwardDiff.jacobian(pmimo, [2, 3])
+    end
 end
 
 @testset "batched_frule: MISO" begin
