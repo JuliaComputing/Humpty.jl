@@ -10,13 +10,24 @@
 
 
     res = batched_frule(
-        Batch([
+        Batch((
             Tangent{Tuple{typeof(psiso),Float64}}(NoTangent(), 2.0),
             Tangent{Tuple{typeof(psiso),Float64}}(NoTangent(), 5.0),
-        ]),
+        )),
         psiso, 3.0
     )
-    @test res == (301.0, Batch([200.0, 500.0]))
+    @test res == (301.0, Batch((200.0, 500.0)))
+
+    @testset "check vector backed" begin    
+        res = batched_frule(
+            Batch([
+                Tangent{Tuple{typeof(psiso),Float64}}(NoTangent(), 2.0),
+                Tangent{Tuple{typeof(psiso),Float64}}(NoTangent(), 5.0),
+            ]),
+            psiso, 3.0
+        )
+        @test res == (301.0, Batch((200.0, 500.0)))
+    end
 end
 
 @testset "batched_frule: MIMO" begin
@@ -31,10 +42,10 @@ end
 
 
     primal_res, deriv_batch = batched_frule(
-        Batch([
+        Batch((
             Tangent{Tuple{typeof(pmimo), Vector{Float64}}}(NoTangent(), [1.0, 0.0]),
             Tangent{Tuple{typeof(pmimo), Vector{Float64}}}(NoTangent(), [0.0, 1.0]),
-        ]),
+        )),
         pmimo, [2, 3]
     )
     @test primal_res == [230, 3000]

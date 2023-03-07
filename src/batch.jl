@@ -1,22 +1,24 @@
 """
-    Batch{N,D} <: AbstractVector{D}
+    Batch{N,D, M} <: AbstractVector{D}
 
 Represents a batch of tangents that can be propagated together.
 `D` must be a valid tangent type, which in short means it must represent an element of a vector space.
 Together this batch forms a basis for vector (sub)space.
 
 N is the number of elements in the batch being propagated.
+M is the backing storage, and is an implementation detail
 """
-struct Batch{N,D} <: AbstractVector{D}
-    elements::Vector{D}
-    function Batch{N,D}(elements::Vector{D}) where {N,D}
+struct Batch{N,D,M} <: AbstractVector{D}
+    elements::M
+    function Batch{N,D}(elements::M) where {N,D,M}
         N == length(elements) || throw(DimensionMismatch("Size specified as $N, but $(length(elements)) inputs provided."))
-        return new{N,D}(elements)
+        D == eltype(M) || throw(DimensionMismatch("eltype specified as $D, but $(eltype(M)) typed inputs provided."))
+        return new{N,D,M}(elements)
     end
 end
-Batch(elements::Vector{D}) where D = Batch{length(elements), D}(elements)
-Batch{N}(elements::Vector{D}) where {N,D} = Batch{N,D}(elements)
-Batch() = Batch([])
+Batch(elements) = Batch{length(elements), eltype(elements)}(elements)
+Batch{N}(elements) where {N} = Batch{N, eltype(elements)}(elements)
+Batch() = Batch(tuple())
 
 Base.size(::Batch{N}) where N = (N,)
 Base.getindex(bb::Batch, ii) = bb.elements[ii]
@@ -29,7 +31,7 @@ function Base.convert(::Type{Matrix{R}}, batch::Batch{N,<:AbstractVector{R}}) wh
 
     # we know that for this to be valid all elements must have same length, so can preallocate this
     jac = Matrix{R}(undef, n_out, N)
-    for (ii, ele) in zip(axes(jac, 2), batch)
+    for (ii, ele) in zip(1:N, batch)
         jac[:, ii] .= ele
     end
     return jac
