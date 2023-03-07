@@ -8,12 +8,10 @@ ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 
 [compat]
 julia = "1.8"
-ChainRules = "1.47"
 ChainRulesCore = "1.15.7"
 
 [extras]
-ChainRules = "082447d4-558c-5d27-93f4-14fc19e9eca2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "ChainRules"]
+test = ["Test"]

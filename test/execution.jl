@@ -1,19 +1,22 @@
 
 
 @testset "batched_frule: SISO" begin
-    @assert frule((NoTangent(), 10.0), sin, 3.0) == (sin(3.0), 10cos(3.0))
-    @assert frule((NoTangent(), 100.0), sin, 3.0) == (sin(3.0), 100cos(3.0))
+    psiso(x) = 100x + 1
+
+    ChainRulesCore.frule((_, ẋ), ::typeof(psiso), x) = psiso(x), 100ẋ
+    
+    @assert frule((NoTangent(), 2.0), psiso, 3.0) == (301.0, 200.0)
+    @assert frule((NoTangent(), 5.0), psiso, 3.0) == (301.0, 500.0)
 
 
     res = batched_frule(
         Batch([
-            Tangent{Tuple{typeof(sin),Float64}}(NoTangent(), 10.0),
-            Tangent{Tuple{typeof(sin),Float64}}(NoTangent(), 100.0),
+            Tangent{Tuple{typeof(psiso),Float64}}(NoTangent(), 2.0),
+            Tangent{Tuple{typeof(psiso),Float64}}(NoTangent(), 5.0),
         ]),
-        sin, 3.0
+        psiso, 3.0
     )
-    @test res == (sin(3.0), Batch([10cos(3.0), 100cos(3.0)]))
-
+    @test res == (301.0, Batch([200.0, 500.0]))
 end
 
 @testset "batched_frule: MIMO" begin
