@@ -36,3 +36,29 @@ function Base.convert(::Type{Matrix{R}}, batch::Batch{N,<:AbstractVector{R}}) wh
     end
     return jac
 end
+
+#TODO: drop support for vector backed?
+function Base.vcat(b1::Batch{N,<:Any,<:Vector}, b2::Batch{M,<:Any,<:Vector}) where {N,M}
+    return Batch{N+M}(vcat(b1.elements, b2.elements))
+end
+
+
+Base.vcat(b::Batch, ::Batch{0}) = b
+Base.vcat(::Batch{0}, b::Batch) = b
+Base.vcat(b::Batch{0}, ::Batch{0}) = b
+
+Base.vcat(b::Batch{<:Any,<:Any,<:Tuple}, ::Batch{0}) = b  # fix ambig
+
+function Base.vcat(b1::Batch{N,<:Any,<:Tuple}, b2::Batch{M}) where {N,M}
+    return Batch{N+M}(ntuple(N+M) do ii
+        if ii <= N
+            b1[ii]
+        else
+            b2[ii-N]
+        end
+    end
+    )
+end
+
+# For the important tuple case this constant-folds away
+Base.vcat(b1::Batch, bs::Batch...) = reduce(vcat, (b1, bs...))

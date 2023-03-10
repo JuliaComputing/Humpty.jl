@@ -16,3 +16,18 @@ end
 
     # TODO: we must test that we give output that agrees with the output format of ForwardDiff.jacobian and FIniteDiff.jacobian
 end
+
+@testset "vcat" begin
+    # Vector
+    @test vcat(Batch([1,2,3]), Batch([4,5])) == Batch([1,2,3,4,5])
+    
+    # Tuple
+    @test vcat(Batch((1,2,3)), Batch((4,5))) === Batch((1,2,3,4,5))
+    @test vcat(Batch(), Batch()) === Batch()
+    @test vcat(Batch(), Batch((1,2))) === Batch((1,2))
+    @test vcat(Batch((1,2)), Batch()) === Batch((1,2))
+
+    @test vcat(Batch((1,)), Batch((2,)), Batch((3,))) === Batch((1,2,3))
+    @test reduce(vcat, (Batch((1,)), Batch((2,)), Batch((3,)))) === Batch((1,2,3))    
+
+end
