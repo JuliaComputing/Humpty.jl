@@ -1,5 +1,5 @@
 @testset "Basics" begin
-    bb = Batch([[0.0, 2.0], [8.0, 0.0]])
+    bb = Batch(([0.0, 2.0], [8.0, 0.0]))
 
     @test size(bb) == (2,)
     @test bb[1] == [0.0, 2.0]
@@ -10,7 +10,7 @@ end
 
 
 @testset "Matrix representation of Jacobian" begin
-    bb = Batch([[0.0, 2.0], [8.0, 0.0]])
+    bb = Batch(([0.0, 2.0], [8.0, 0.0]))
     bmat = convert(Matrix{Float64}, bb)
     @test bmat == [0.0 8.0; 2.0 0.0]
 
@@ -18,10 +18,6 @@ end
 end
 
 @testset "vcat" begin
-    # Vector
-    @test vcat(Batch([1,2,3]), Batch([4,5])) == Batch([1,2,3,4,5])
-    
-    # Tuple
     @test vcat(Batch((1,2,3)), Batch((4,5))) === Batch((1,2,3,4,5))
     @test vcat(Batch(), Batch()) === Batch()
     @test vcat(Batch(), Batch((1,2))) === Batch((1,2))

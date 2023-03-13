@@ -5,14 +5,16 @@ Represents a batch of tangents that can be propagated together.
 `D` must be a valid tangent type, which in short means it must represent an element of a vector space.
 Together this batch forms a basis for vector (sub)space.
 
+As a general guide all the tangent types stored in the batch will be of type D, but this
+does not have to be true as a universal rule, for example they might be `ChainRulesCore.ZeroTangent()`
+
 N is the number of elements in the batch being propagated.
 M is the backing storage, and is an implementation detail
 """
-struct Batch{N,D,M} <: AbstractVector{D}
+struct Batch{N,D,M<:Tuple} <: AbstractVector{D}
     elements::M
     function Batch{N,D}(elements::M) where {N,D,M}
         N == length(elements) || throw(DimensionMismatch("Size specified as $N, but $(length(elements)) inputs provided."))
-        D == eltype(M) || throw(DimensionMismatch("eltype specified as $D, but $(eltype(M)) typed inputs provided."))
         return new{N,D,M}(elements)
     end
 end
@@ -37,17 +39,11 @@ function Base.convert(::Type{Matrix{R}}, batch::Batch{N,<:AbstractVector{R}}) wh
     return jac
 end
 
-#TODO: drop support for vector backed?
-function Base.vcat(b1::Batch{N,<:Any,<:Vector}, b2::Batch{M,<:Any,<:Vector}) where {N,M}
-    return Batch{N+M}(vcat(b1.elements, b2.elements))
-end
-
 
 Base.vcat(b::Batch, ::Batch{0}) = b
 Base.vcat(::Batch{0}, b::Batch) = b
 Base.vcat(b::Batch{0}, ::Batch{0}) = b
 
-Base.vcat(b::Batch{<:Any,<:Any,<:Tuple}, ::Batch{0}) = b  # fix ambig
 
 function Base.vcat(b1::Batch{N,<:Any,<:Tuple}, b2::Batch{M}) where {N,M}
     return Batch{N+M}(ntuple(N+M) do ii
