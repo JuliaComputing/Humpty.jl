@@ -61,7 +61,7 @@ Returns the additive identity for the primal.
 The additive identity is taken from the tangent space.
 For primals that have no tangent space returns `NoTangent()`
 """
-function d_zero(T) end
+function d_zero end
 
 d_zero(x::Number) = zero(x)
 d_zero(x::AbstractArray) = zero(x)
