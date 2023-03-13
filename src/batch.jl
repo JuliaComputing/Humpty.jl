@@ -12,6 +12,7 @@ N is the number of elements in the batch being propagated.
 M is the backing storage, and is an implementation detail
 """
 struct Batch{N,D,M<:Tuple} <: AbstractVector{D}
+    # TODO: do we really need D? or to subtype AbstractVector?
     elements::M
     function Batch{N,D}(elements::M) where {N,D,M}
         N == length(elements) || throw(DimensionMismatch("Size specified as $N, but $(length(elements)) inputs provided."))
