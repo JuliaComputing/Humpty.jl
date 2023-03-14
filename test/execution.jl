@@ -70,11 +70,11 @@ struct NonLinear end
 @testset "incidence using" begin
 
     imiso((x,y,z)) = 10.0y + z^2
-    ChainRulesCore.frule((_, (ẋ, ẏ, ż)), ::typeof(imiso), xy) = imiso(xy), 10.0ẏ + 2ż
-    @assert frule((NoTangent(), [0.0, 0.0, 0.0]), imiso, [2.0, 3.0, 5.0]) == (55.0, 0.0)
-    @assert frule((NoTangent(), [1.0, 0.0, 0.0]), imiso, [2.0, 3.0, 5.0]) == (55.0, 0.0)
-    @assert frule((NoTangent(), [0.0, 1.0, 0.0]), imiso, [2.0, 3.0, 5.0]) == (55.0, 10.0)
-    @assert frule((NoTangent(), [0.0, 0.0, 1.0]), imiso, [2.0, 3.0, 5.0]) == (55.0, 2.0)
+    ChainRulesCore.frule((_, (ẋ, ẏ, ż)), ::typeof(imiso), (x,y,z)) = imiso((x,y,z)), 10.0ẏ + 2ż*z
+    @assert frule((NoTangent(), [0.0, 0.0, 0.0]), imiso, [2.0, 3.0, 6.0]) == (66.0, 0.0)
+    @assert frule((NoTangent(), [1.0, 0.0, 0.0]), imiso, [2.0, 3.0, 6.0]) == (66.0, 0.0)
+    @assert frule((NoTangent(), [0.0, 1.0, 0.0]), imiso, [2.0, 3.0, 6.0]) == (66.0, 10.0)
+    @assert frule((NoTangent(), [0.0, 0.0, 1.0]), imiso, [2.0, 3.0, 6.0]) == (66.0, 12.0)
 
 
     # using the basis.jl code to make writing tests shorter
@@ -82,9 +82,9 @@ struct NonLinear end
     @assert length(ẋs) == 3  # only  3 differentiable elements
 
     direct_incidence = (0, 10.0, NonLinear())
-    _, out = batched_frule(ẋs, direct_incidence, imiso, [2.0, 3.0, 5.0])
+    _, out = batched_frule(ẋs, direct_incidence, imiso, [2.0, 3.0, 6.0])
     # can't use == as the ZeroTangent breaks it (https://github.com/JuliaDiff/ChainRulesCore.jl/issues/607)
     @test iszero(out[1])
     @test out[2] == 10.0
-    @test out[3] == 2.0
+    @test out[3] == 12.0
 end
