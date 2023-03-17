@@ -25,10 +25,6 @@ In the case of basis elements that are vectors, this `Batch{Vector{R}}` can be c
 Because we are rallying all the kings horses and all the king's men.
 IDK, look, I am a programmer, not a poet.
 
-### Is this related to Jax's `vmap`?
-Yes, closely.
-Especially once we generalize this beyong `batched_frule`
-
 ### Is this related to broadcasting?
 It's complicated.
 Often broadcasting is exactly the operation we want.
